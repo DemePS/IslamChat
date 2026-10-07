@@ -13,9 +13,13 @@ import sys
 import time
 from pathlib import Path
 
-from waxal_agent import audio, certs
-from waxal_agent.soynade_api import SoynadeClient, SoynadeError
-from waxal_agent.tts.base import SpeechUnavailable
+from waxal_agent.cli import load_env
+
+load_env()  # the .env file (as the server does), before anything reads the environment
+
+from waxal_agent import audio, certs  # noqa: E402
+from waxal_agent.soynade_api import SoynadeClient, SoynadeError  # noqa: E402
+from waxal_agent.tts.base import SpeechUnavailable  # noqa: E402
 
 
 def timed(fn):
