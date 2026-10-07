@@ -166,9 +166,9 @@ stream sends the whole WAV. When no voice can be made, the answer is a 502 with 
 
 ## Links
 
-The agent can show the person a link (`share_link`), for example to the insurance regulator's site. The link is displayed on the page and
+The agent can show the person a link (`share_link`), for example to the page of a trusted site that answers the question. The link is displayed on the page and
 sent as text under the answer on WhatsApp, and never spoken. Only `https` addresses on the sites of `WAXAL_LINK_DOMAINS` (a site and its
-subdomains, e.g. `renassur.sn`; `renassur.sn=Renassur` also fixes the name shown for the link, whatever the agent wrote) are accepted; a refusal tells the agent why. When it is not set, no link is shared. The agent can also use
+subdomains, e.g. `example.org`; `example.org=Example` also fixes the name shown for the link, whatever the agent wrote) are accepted; a refusal tells the agent why. When it is not set, no link is shared. The agent can also use
 `web_search` (Anthropic's hosted search, `AGENT_WEB_SEARCH=off` to disable it) to find the page. No link to the library's files is offered.
 
 ## INSTRUCTIONS.md: general instructions, apart from the documents
@@ -177,7 +177,7 @@ Put a file named `INSTRUCTIONS.md` (and, if you like, other `.md` or `.txt` file
 turn, reads the files with `read_file`, and follows whatever they say: it is the owner's word and wins over the prompt's own rules (including "answer only from the documents"), so it can also say what the agent may tell about itself and the service: what the documents are, how to use them and the tasks it has to do. It is
 the same for every person, and it is kept apart from the library, which holds only the knowledge the agent answers from. The folder is read-only for
 the agent and is the only part of `data/` it can open (the people's folders and conversations are not). No code is involved, so a customer can
-write their own: `docs/INSTRUCTIONS.example.md` is an example (two documents, and a link to a partner). With Docker, `data/` is the mounted volume,
+write their own: `docs/INSTRUCTIONS.example.md` is an example (the library first, then the allowed sites). With Docker, `data/` is the mounted volume,
 so edit the file there.
 
 ## Streaming a turn
@@ -196,9 +196,9 @@ A skill is a folder with a `SKILL.md` (a `---` header with `name:` and `descript
 `--skills`), the same for every person. The agent sees the list of names and descriptions with each message and loads a skill with `load_skill` only when
 it fits, so many skills cost little. Unlike `INSTRUCTIONS.md`, which is always read, a skill is read on demand. The folder is read-only for the agent, and
 a skill added while the server runs is found at the next turn. Only this folder is used: CodeAgent's own coding skills are not offered.
-`docs/skills/` holds examples to copy into `data/skills/`: `answer-from-the-code` (how to research an answer in the two long documents, interpretations first),
-`declare-a-claim`, `explain-my-contract`, `recommend-partner-insurance` (a confident but honest recommendation, with a link to the partner) and `register-on-partner-website`
-(its steps are to be written by the owner).
+`docs/skills/` holds examples to copy into `data/skills/`: `answer-from-the-sources` (the base method, document-first: the library's table of contents and
+only the pages needed, then the allowed websites, never memory), `teach-the-basics` (step-by-step lessons), `explain-a-text` (a verse, a hadith, a term) and
+`personal-question` (sensitive situations: general knowledge, no personal ruling, refer to a qualified scholar).
 
 ## No translation (French, or any language the recogniser and the voice handle)
 
@@ -208,7 +208,7 @@ speak that language (`ELEVENLABS_STT_LANGUAGE` and `ELEVENLABS_TTS_LANGUAGE` fol
 voice). The start-up line says `translation: none`. Nothing calls Claude's or Soynade's translation; the "nothing heard" message and the fixed WhatsApp
 messages are sent in French. Soynade recognises Wolof only, so use `WAXAL_STT=elevenlabs` (the default) with a language other than Wolof.
 
-## Browsing the partner's site
+## Browsing the trusted sites
 
 The agent can navigate the sites of `WAXAL_LINK_DOMAINS` (`web_open`, `web_click` with a number from the page's list, `web_page`, `web_back`, `web_close`) to find the exact
 page for what the person needs, and then show its address with `share_link`. It uses CodeAgent's headless browser (`uv sync --extra browser`, then

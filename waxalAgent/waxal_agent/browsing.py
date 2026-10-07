@@ -1,5 +1,5 @@
 """Browsing for the agent: CodeAgent's headless browser (web_open, web_click, web_page, web_back, web_close), limited to the websites of
-WAXAL_LINK_DOMAINS, so that it can find the right page of the partner's site and share its address (share_link).
+WAXAL_LINK_DOMAINS, so that it can find the right page of a trusted site and share its address (share_link).
 
 CodeAgent's browser asks a person before it opens a new site, and the voice channel answers every question "no". Here the allowed sites are the
 ones that were approved in advance, and nothing else can be opened. Three rules on top of CodeAgent's own (it already refuses link-local and

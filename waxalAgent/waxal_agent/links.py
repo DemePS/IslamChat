@@ -1,7 +1,7 @@
 """Links the agent may share with the person (the share_link tool): https only, and only on the sites of WAXAL_LINK_DOMAINS.
 
-    WAXAL_LINK_DOMAINS=renassur.sn,example.sn      a site and its subdomains (www.renassur.sn, ...)
-    WAXAL_LINK_DOMAINS=renassur.sn=Renassur        with the name shown for it: then that name is the label, whatever the agent wrote
+    WAXAL_LINK_DOMAINS=example.org,example.net    a site and its subdomains (www.example.org, ...)
+    WAXAL_LINK_DOMAINS=example.org=Example        with the name shown for it: then that name is the label, whatever the agent wrote
 
 Not set: no link is allowed (nothing is shared by accident). A refusal says why, to the agent, so it can answer without the link."""
 

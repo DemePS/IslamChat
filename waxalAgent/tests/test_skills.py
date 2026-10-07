@@ -12,7 +12,7 @@ EXAMPLES = Path(__file__).resolve().parent.parent / "docs" / "skills"
 
 def test_the_example_skills_are_valid_skills():
     assert skill_problems(EXAMPLES) == []
-    names = ("recommend-partner-insurance", "register-on-partner-website", "answer-from-the-code", "declare-a-claim", "explain-my-contract")
+    names = ("answer-from-the-sources", "teach-the-basics", "explain-a-text", "personal-question")
     assert sorted(p.name for p in EXAMPLES.iterdir()) == sorted(names)
     for name in names:
         header = read_skill_header(EXAMPLES / name / "SKILL.md")
