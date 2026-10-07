@@ -97,11 +97,10 @@ def test_a_configured_name_is_the_label_whatever_the_agent_wrote(monkeypatch):
     assert check_link("https://example.sn/")["label"] == "example.sn"
 
 
-def test_the_prompt_tells_the_agent_to_research_the_allowed_sites_before_giving_up(monkeypatch, tmp_path):
+def test_the_prompt_tells_the_agent_to_research_the_allowed_sites_first_then_check_the_library(monkeypatch, tmp_path):
     monkeypatch.setenv("WAXAL_LINK_DOMAINS", "islamqa.info=IslamQA")
     prompt = AgentTurns(tmp_path / "users").prompt_for_turn()
-    assert "MUST research the allowed" in prompt and "islamqa.info" in prompt
-    assert "If the library is empty or does not contain the answer" in prompt
-    assert "If the files do not contain the answer, say so plainly" not in prompt
+    assert "research the allowed websites" in prompt and "islamqa.info" in prompt
+    assert "check what you found against the documents of the library" in prompt
     monkeypatch.delenv("WAXAL_LINK_DOMAINS")
-    assert "MUST research" not in AgentTurns(tmp_path / "users").prompt_for_turn()
+    assert "research the allowed websites" not in AgentTurns(tmp_path / "users").prompt_for_turn()

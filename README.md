@@ -196,8 +196,8 @@ A skill is a folder with a `SKILL.md` (a `---` header with `name:` and `descript
 `--skills`), the same for every person. The agent sees the list of names and descriptions with each message and loads a skill with `load_skill` only when
 it fits, so many skills cost little. Unlike `INSTRUCTIONS.md`, which is always read, a skill is read on demand. The folder is read-only for the agent, and
 a skill added while the server runs is found at the next turn. Only this folder is used: CodeAgent's own coding skills are not offered.
-`docs/skills/` holds examples to copy into `data/skills/`: `answer-from-the-sources` (the base method, document-first: the library's table of contents and
-only the pages needed, then the allowed websites, never memory), `teach-the-basics` (step-by-step lessons), `explain-a-text` (a verse, a hadith, a term) and
+`docs/skills/` holds examples to copy into `data/skills/`: `answer-from-the-sources` (the base method: research the allowed websites first, then check against the library's
+table of contents and only the pages needed, then answer; never memory), `teach-the-basics` (step-by-step lessons), `explain-a-text` (a verse, a hadith, a term) and
 `personal-question` (sensitive situations: general knowledge, no personal ruling, refer to a qualified scholar).
 
 ## No translation (French, or any language the recogniser and the voice handle)
