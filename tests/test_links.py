@@ -5,6 +5,7 @@ from coding_agent.tools import TOOL_HANDLERS
 
 from tests.test_pipeline import StubAgent
 from waxal_agent import agent as module
+from waxal_agent.agent import AgentTurns
 from waxal_agent.links import LinkRefused, check_link
 from waxal_agent.mt.fake import FakeTranslator
 from waxal_agent.pipeline import Pipeline
@@ -94,3 +95,11 @@ def test_a_configured_name_is_the_label_whatever_the_agent_wrote(monkeypatch):
     assert check_link("https://www.renassur.sn/", "insurance company")["label"] == "Renassur"
     assert check_link("https://example.sn/", "The regulator")["label"] == "The regulator"      # no name configured: the agent's label
     assert check_link("https://example.sn/")["label"] == "example.sn"
+
+
+def test_the_prompt_tells_the_agent_to_research_the_allowed_sites_before_giving_up(monkeypatch, tmp_path):
+    monkeypatch.setenv("WAXAL_LINK_DOMAINS", "islamqa.info=IslamQA")
+    prompt = AgentTurns(tmp_path / "users").prompt_for_turn()
+    assert "MUST research the allowed" in prompt and "islamqa.info" in prompt
+    monkeypatch.delenv("WAXAL_LINK_DOMAINS")
+    assert "MUST research" not in AgentTurns(tmp_path / "users").prompt_for_turn()
