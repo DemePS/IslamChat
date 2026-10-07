@@ -1,6 +1,6 @@
 # Live test sandbox
 
-A way to try WaxalAgent for real on your PC, in a container that cannot touch the rest of your system, and then from
+A way to try IslamChat for real on your PC, in a container that cannot touch the rest of your system, and then from
 your own WhatsApp. Two stages: first the web test page, then WhatsApp.
 
 Nothing here could be run where this code was written (no Docker daemon, no Soynade or WhatsApp access): the compose file
@@ -12,7 +12,7 @@ the first run, and tell me what the logs say.
 Needs Docker Desktop (WSL 2 on Windows). The image is small: no models.
 
 ```bash
-git clone https://github.com/DemePS/WaxalAgent && cd WaxalAgent
+git clone https://github.com/DemePS/IslamChat && cd IslamChat
 cp example.env .env              # then edit: ANTHROPIC_API_KEY, WAXAL_TOKEN (any long random string)
 docker compose up --build         # the stand-ins: starts in a minute, no models
 ```

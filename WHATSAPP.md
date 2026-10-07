@@ -1,7 +1,7 @@
 # Test on WhatsApp
 
 ```bash
-git clone https://github.com/DemePS/WaxalAgent && cd WaxalAgent
+git clone https://github.com/DemePS/IslamChat && cd IslamChat
 cp example.env .env
 ```
 
@@ -23,7 +23,7 @@ WAXAL_ALLOWED=<your number, digits only with country code>
 ```bash
 uv sync
 set -a; source .env; set +a
-uv run waxal-agent serve --whatsapp --host 0.0.0.0 --port 8000
+uv run islamchat serve --whatsapp --host 0.0.0.0 --port 8000
 ```
 
 In a second terminal, a public address (needs `cloudflared`):
