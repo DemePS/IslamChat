@@ -101,5 +101,7 @@ def test_the_prompt_tells_the_agent_to_research_the_allowed_sites_before_giving_
     monkeypatch.setenv("WAXAL_LINK_DOMAINS", "islamqa.info=IslamQA")
     prompt = AgentTurns(tmp_path / "users").prompt_for_turn()
     assert "MUST research the allowed" in prompt and "islamqa.info" in prompt
+    assert "If the library is empty or does not contain the answer" in prompt
+    assert "If the files do not contain the answer, say so plainly" not in prompt
     monkeypatch.delenv("WAXAL_LINK_DOMAINS")
     assert "MUST research" not in AgentTurns(tmp_path / "users").prompt_for_turn()
