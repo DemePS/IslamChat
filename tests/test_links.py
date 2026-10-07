@@ -101,6 +101,7 @@ def test_the_prompt_tells_the_agent_to_research_the_allowed_sites_first_then_che
     monkeypatch.setenv("WAXAL_LINK_DOMAINS", "islamqa.info=IslamQA")
     prompt = AgentTurns(tmp_path / "users").prompt_for_turn()
     assert "research the allowed websites" in prompt and "islamqa.info" in prompt
+    assert "EACH of them" in prompt and "not just the last one" in prompt
     assert "check what you found against the documents of the library" in prompt
     monkeypatch.delenv("WAXAL_LINK_DOMAINS")
     assert "research the allowed websites" not in AgentTurns(tmp_path / "users").prompt_for_turn()
