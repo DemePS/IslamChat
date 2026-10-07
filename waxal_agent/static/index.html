@@ -73,6 +73,7 @@ class Voice {
   constructor(onReady) { this.onReady = onReady; this.el = null; this.group = []; this.media = null; this.clips = []; this.next = 0; }
   push(media, b64) {
     const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+    if (!bytes.length) { this.flush(); return; }   // the end of one audio file
     if (!this.el) { this.el = document.createElement('audio'); this.el.controls = true; this.el.addEventListener('ended', () => this.playNext()); this.onReady(this.el); }
     if (media === 'audio/wav') { this.flush(); this.add(media, [bytes]); }
     else { if (this.media && this.media !== media) this.flush(); this.media = media; this.group.push(bytes); }
