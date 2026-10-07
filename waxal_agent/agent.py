@@ -158,7 +158,7 @@ class AgentTurns:
         research = (f"\n\nOrder of work, which replaces \"read the relevant files first\" above: (1) research the allowed websites "
                     f"({', '.join(domains)}) first, EACH of them, not only one: for every site, {find} "
                     f"read it (web_page, web_click), and keep what each site says; call share_link for every page you used, "
-                    f"one link per site; open at most {browsing.max_opens()} pages in all (web_open), so choose them well; (2) then check what you found against the documents of the library (its table of contents first, then only the pages "
+                    f"one link per site; open at most {browsing.max_opens()} pages in all (web_open), so choose them well. A search page may show its results a moment after it loads: if it shows \"Loading\" or no result, call web_page once to read it again before you conclude that nothing was found. Use the language version of the site that matches the person's language (for example /fr/ for French). (2) then check what you found against the documents of the library (its table of contents first, then only the pages "
                     f"that match; nothing to check if the library is empty); (3) then answer from all of them, naming every site and document you used, not just the last one. If they "
                     f"differ, say so and give each view with its source. These sites are as trusted as the library, so \"answer only from the documents\" includes them. "
                     f"Do not answer from memory, and do not say the answer is missing until you have looked on those sites.") if domains else ""

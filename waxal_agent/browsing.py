@@ -76,6 +76,25 @@ def max_opens() -> int:
         return MAX_OPENS
 
 
+SETTLE_MAX = 10.0  # seconds a page may keep filling itself after it was opened (a search page shows its results after a script call)
+SETTLE_QUIET = 3.0  # seconds without any change in its text: it is finished
+
+
+def _wait_until_still(browser) -> bool:
+    """Wait until the text of the open page stops changing (at most SETTLE_MAX s); True when it changed while waiting."""
+    page = browser.ensure_page()
+    size = lambda: page.evaluate("document.body ? document.body.innerText.length : 0")
+    first = last = size()
+    still = waited = 0.0
+    while waited < SETTLE_MAX and still < SETTLE_QUIET:
+        page.wait_for_timeout(500)
+        waited += 0.5
+        now = size()
+        still = still + 0.5 if now == last else 0.0
+        last = now
+    return last != first
+
+
 def _web_open(original):
     def web_open(url: str) -> str:
         global _opens
@@ -90,7 +109,13 @@ def _web_open(original):
                             "(web_click and web_page still work on the page that is open).")
         _opens += 1
         _web._B.approved.add(urlsplit(target).hostname.lower())  # approved in advance: nobody can be asked in this channel
-        return original(target)
+        page = original(target)
+        try:
+            if _web._B.call(_wait_until_still):  # the page filled itself after the load: read it again
+                return _web._render(_web._B.call(lambda b: b.snapshot()))
+        except Exception:  # the wait is a help, never a failure
+            pass
+        return page
     web_open.waxal = True
     return web_open
 
