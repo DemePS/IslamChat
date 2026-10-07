@@ -105,3 +105,16 @@ def test_the_prompt_tells_the_agent_to_research_the_allowed_sites_first_then_che
     assert "check what you found against the documents of the library" in prompt
     monkeypatch.delenv("WAXAL_LINK_DOMAINS")
     assert "research the allowed websites" not in AgentTurns(tmp_path / "users").prompt_for_turn()
+
+
+def test_the_hosted_web_search_is_off_when_trusted_sites_are_set(monkeypatch, tmp_path):
+    from waxal_agent.cli import load_env
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setenv("WAXAL_LINK_DOMAINS", "islamqa.info")
+    monkeypatch.delenv("AGENT_WEB_SEARCH", raising=False)
+    load_env()
+    assert __import__("os").environ["AGENT_WEB_SEARCH"] == "off"
+    monkeypatch.setenv("AGENT_WEB_SEARCH", "20250305")
+    load_env()
+    assert __import__("os").environ["AGENT_WEB_SEARCH"] == "20250305"      # chosen explicitly: kept

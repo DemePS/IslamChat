@@ -31,6 +31,10 @@ def load_env() -> None:
     from dotenv import find_dotenv, load_dotenv
     load_dotenv(find_dotenv(usecwd=True))
     load_dotenv(Path(os.environ.get("HOME") or Path.home()).expanduser() / ".coding-agent" / ".env")
+    # Anthropic's hosted web search reads the whole web: it cannot be limited to the trusted sites. With a list of trusted sites, the agent
+    # finds its pages by browsing them (web_open); AGENT_WEB_SEARCH set to a version turns the hosted search back on.
+    if os.environ.get("WAXAL_LINK_DOMAINS", "").strip() and not os.environ.get("AGENT_WEB_SEARCH"):
+        os.environ["AGENT_WEB_SEARCH"] = "off"
 
 
 def main() -> None:
