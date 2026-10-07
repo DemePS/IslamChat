@@ -12,6 +12,7 @@ cloud-metadata addresses, passwords, payment fields, downloads, and sends no for
 
 import importlib.util
 import ipaddress
+import os
 import socket
 from urllib.parse import urlsplit
 
@@ -64,14 +65,30 @@ def _strict(original):
     return request_allowed
 
 
+MAX_OPENS = 3  # web_open calls in one turn (WAXAL_MAX_WEB_OPEN): then the agent answers with what it has read
+_opens = 0
+
+
+def max_opens() -> int:
+    try:
+        return max(1, int(os.environ.get("WAXAL_MAX_WEB_OPEN") or MAX_OPENS))
+    except ValueError:
+        return MAX_OPENS
+
+
 def _web_open(original):
     def web_open(url: str) -> str:
+        global _opens
         target = (url or "").strip()
         if "://" not in target:
             target = "https://" + target
         if not on_allowed_site(target):
             raise ToolError("Only an https address on one of these websites can be opened: " + (", ".join(allowed_domains()) or "(none allowed)")
                             + ". Do not try another address.")
+        if _opens >= max_opens():
+            raise ToolError(f"web_open was already used {max_opens()} times for this question: no more pages. Answer now from what you have read "
+                            "(web_click and web_page still work on the page that is open).")
+        _opens += 1
         _web._B.approved.add(urlsplit(target).hostname.lower())  # approved in advance: nobody can be asked in this channel
         return original(target)
     web_open.waxal = True
@@ -87,7 +104,9 @@ def install() -> None:
 
 
 def reset() -> None:
-    """Close the browser (end of a turn): its cookies, its history and its open page go with it."""
+    """Close the browser (end of a turn): its cookies, its history and its open page go with it. The web_open count starts again."""
+    global _opens
+    _opens = 0
     try:
         _web._B.close()
     except Exception:  # nothing was open, or Playwright is not installed

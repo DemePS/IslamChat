@@ -10,6 +10,7 @@ from waxal_agent.agent import AgentTurns, TOOLS
 @pytest.fixture(autouse=True)
 def renassur(monkeypatch):
     monkeypatch.setenv("WAXAL_LINK_DOMAINS", "renassur.sn=Renassur")
+    browsing.reset()      # the web_open count of a turn starts at zero
 
 
 def test_only_an_https_address_on_an_allowed_site_is_on_an_allowed_site():
@@ -80,3 +81,22 @@ def test_the_start_up_line_says_what_can_be_browsed(monkeypatch):
     assert "Playwright is not installed" in browsing.report()
     monkeypatch.delenv("WAXAL_LINK_DOMAINS")
     assert browsing.report().startswith("Browsing: off")
+
+
+def test_a_turn_opens_at_most_three_pages_and_the_count_starts_again_after_it(monkeypatch):
+    opened = []
+    monkeypatch.setitem(TOOL_HANDLERS, "web_open", lambda url: opened.append(url) or "Page: x")
+    browsing.install()
+    for n in range(3):
+        TOOL_HANDLERS["web_open"](f"https://renassur.sn/{n}")
+    with pytest.raises(ToolError, match="already used 3 times"):
+        TOOL_HANDLERS["web_open"]("https://renassur.sn/4")
+    assert len(opened) == 3
+    browsing.reset()                                            # the end of the turn
+    TOOL_HANDLERS["web_open"]("https://renassur.sn/5")
+    assert len(opened) == 4
+    monkeypatch.setenv("WAXAL_MAX_WEB_OPEN", "1")
+    browsing.reset()
+    TOOL_HANDLERS["web_open"]("https://renassur.sn/6")
+    with pytest.raises(ToolError):
+        TOOL_HANDLERS["web_open"]("https://renassur.sn/7")
