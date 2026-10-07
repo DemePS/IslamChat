@@ -12,6 +12,7 @@ cloud-metadata addresses, passwords, payment fields, downloads, and sends no for
 
 import importlib.util
 import ipaddress
+import logging
 import os
 import socket
 from urllib.parse import urlsplit
@@ -21,6 +22,8 @@ from coding_agent.tools import TOOL_HANDLERS
 from coding_agent.tools import web as _web
 
 from .links import allowed_domains
+
+log = logging.getLogger(__name__)
 
 BROWSER_TOOLS = ["web_open", "web_click", "web_page", "web_back", "web_close"]  # not web_type, web_sign_in, web_look: nobody types for the person
 
@@ -53,12 +56,15 @@ _private_hosts: dict[str, bool] = {}
 def _strict(original):
     def request_allowed(request_url: str, host_ok: dict) -> bool:
         if not original(request_url, host_ok):
+            log.warning("   browser: a page request was refused by CodeAgent: %s", request_url[:150])
             return False
         parts = urlsplit(request_url)
         if parts.scheme in ("http", "https", "ws", "wss"):
             host = parts.hostname or ""
             if host not in _private_hosts:
                 _private_hosts[host] = _private(host)
+            if _private_hosts[host]:
+                log.warning("   browser: a page request to %s was refused (local, private or unknown address): %s", host, request_url[:150])
             return not _private_hosts[host]
         return True
     request_allowed.waxal = True
@@ -112,6 +118,7 @@ def _web_open(original):
         page = original(target)
         try:
             if _web._B.call(_wait_until_still):  # the page filled itself after the load: read it again
+                log.info("   browser: %s filled itself after the load, read again", target)
                 return _web._render(_web._B.call(lambda b: b.snapshot()))
         except Exception:  # the wait is a help, never a failure
             pass
