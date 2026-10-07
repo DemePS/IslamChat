@@ -11,6 +11,10 @@ def build_pipeline(data: str, documents: str | None = None, refresh=None, instru
     from .engines import build_engines
     from .pipeline import Pipeline
     listener, translator, speaker = build_engines("hosted")
+    workers = int(os.environ.get("WAXAL_WORKERS") or 4)
+    if workers > 1:  # turns of different people run in parallel, in separate processes
+        from .agent_pool import AgentPool
+        return Pipeline(listener, translator, speaker, AgentPool(workers, data, documents, refresh, instructions=instructions, skills=skills))
     return Pipeline(listener, translator, speaker, AgentTurns(data, documents=documents, refresh=refresh, instructions=instructions, skills=skills))
 
 
@@ -21,6 +25,14 @@ def quiet_loggers() -> None:
     logging.getLogger("httpx").setLevel(logging.WARNING)
     logging.getLogger("azure").setLevel(logging.WARNING)
     logging.getLogger("pypdf").setLevel(logging.ERROR)
+
+
+def setup_logging() -> None:
+    """The log format and level (WAXAL_LOG). The agent's worker processes start from scratch and call it too, or their lines are lost."""
+    import logging
+    logging.basicConfig(level=os.environ.get("WAXAL_LOG", "INFO").upper(), format="%(asctime)s %(levelname)s %(message)s",
+                        datefmt="%H:%M:%S")
+    quiet_loggers()
 
 
 def load_env() -> None:
@@ -54,13 +66,9 @@ def main() -> None:
                        help="The folder of the agent's skills (one folder with a SKILL.md each), the same for every person. WAXAL_SKILLS_DIR.")
     serve.add_argument("--data", default="data/users", help="Where each person's folder and conversation are kept.")
     args = parser.parse_args()
-    import logging
-
     import uvicorn
 
-    logging.basicConfig(level=os.environ.get("WAXAL_LOG", "INFO").upper(), format="%(asctime)s %(levelname)s %(message)s",
-                        datefmt="%H:%M:%S")
-    quiet_loggers()
+    setup_logging()
     from . import certs
     from . import maintenance
     maintenance.start()  # old conversations and notes: once now, then daily

@@ -40,10 +40,13 @@ def _skill_roots() -> list[tuple[str, Path]]:
 coding_skills.skill_roots = _skill_roots
 
 
-def skills_report(folder: Path | None) -> str:
+def skills_report(folder: Path | str | None) -> str:
     """What the server found in the skills folder, for the start-up line: the names, or why there are none."""
-    if folder is None:
+    global _SKILLS_ROOT
+    if not folder:
         return "Skills: off (no skills folder)."
+    folder = Path(folder).resolve()  # the agent pool passes the folder as typed; its workers, not this process, set the root
+    _SKILLS_ROOT = folder
     found = sorted(coding_skills.discover_skills()) if folder.is_dir() else []
     problems = coding_skills.skill_problems(folder) if folder.is_dir() else []
     line = f"Skills: {len(found)} in {folder}" + (f" ({', '.join(found)})" if found else
@@ -179,7 +182,7 @@ class AgentTurns:
         return (base + links
                 + (f"\n\nStyle guide for the Wolof you write (follow it):\n{style}" if style else ""))
 
-    def stop(self) -> bool:
+    def stop(self, user_id: str | None = None) -> bool:
         """Stop the turn that is running (it ends at the next model call and is rolled back). False when none is running."""
         if not self._running:
             return False
