@@ -39,8 +39,8 @@ Optional extra: `uv sync --extra browser` (the agent browses the allowed sites; 
 - **Trusted sources.** `WAXAL_LINK_DOMAINS=islamqa.info=IslamQA, doctrine-malikite.fr=Doctrine Malikite`: the agent browses these sites
   (at most `WAXAL_MAX_WEB_OPEN` pages per question) and may share a link to them, shown under the answer and never spoken. With this list set,
   Anthropic's hosted web search is off, so the agent cannot read the rest of the web.
-- **Library.** The books are long. The skill `answer-from-the-sources` tells the agent to find the pages with `search_pdf` (the library's tool)
-  and open only those pages.
+- **Library.** The books are long. The library's base prompt makes the agent find the pages with `search_pdf` and open only
+  those pages.
 - **Skills.** Loaded on demand: the base method, step-by-step lessons, explaining a verse, a hadith or a term, and sensitive personal questions
   (general knowledge, no personal ruling, refer to a qualified scholar).
 - **Page.** `islamchat/static/index.html` is the library's test page with this app's name; it calls the library's `/api/...` routes, which the
